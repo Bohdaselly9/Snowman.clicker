@@ -1,1 +1,88 @@
-t7u
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сніговик Тапалка</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            text-align: center;
+            background-color: #ADD8E6;
+            font-family: Arial, sans-serif;
+        }
+        img {
+            width: 200px;
+            cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+        img:active {
+            transform: scale(1.1);
+        }
+        h2 {
+            font-size: 24px;
+        }
+        .score-container {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+        .upgrade-button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .upgrade-button:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h2>Натискай на сніговика!</h2>
+    <img id="snowman" src="https://i.imgur.com/YOUR_SNOWMAN.png" alt="Сніговик">
+    <p class="score-container">Очки: <span id="score">0</span></p>
+    <button id="upgrade" class="upgrade-button">🔥 Покращити (500 балів)</button>
+
+    <script>
+        let score = 0;
+        let clickValue = 1; // Кількість очок за клік
+        const snowman = document.getElementById("snowman");
+        const scoreDisplay = document.getElementById("score");
+        const upgradeButton = document.getElementById("upgrade");
+        const tg = window.Telegram.WebApp;
+
+        // Функція оновлення очок
+        function updateScore() {
+            scoreDisplay.textContent = score;
+            upgradeButton.disabled = score < 500; // Відключаємо кнопку, якщо не вистачає балів
+        }
+
+        // Подія кліку на сніговика
+        snowman.addEventListener("click", () => {
+            score += clickValue;
+            updateScore();
+
+            // Відправляємо бали в Telegram-бота
+            tg.sendData(score.toString());
+        });
+
+        // Покращення кліку
+        upgradeButton.addEventListener("click", () => {
+            if (score >= 500) {
+                score -= 500;
+                clickValue = 5; // Тепер за клік дає 5 балів
+                upgradeButton.textContent = "✅ Покращено!";
+                upgradeButton.disabled = true;
+                updateScore();
+            }
+        });
+
+        tg.expand(); // Робимо веб-апку на весь екран
+    </script>
+</body>
+</html>
